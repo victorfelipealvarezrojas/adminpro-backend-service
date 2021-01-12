@@ -8,18 +8,17 @@ const cors = require('cors')
 const app = express();//inicializo la app de express
 //4._ CORS
 app.use(cors());
+//Lectura y parseo del body
+app.use(express.json());//me permite obtener los valores desde el body en el request
+
 //3._BD
 DbConnection();
 
 //2._ Rutas que tendra mi App
-app.get('/', (req, res) => {
-    response.json({
-        ok:true,
-        msg:'Hola mundo'
-    });
-});
+app.use('/api/usuario', require('./routes/usuarios.routes'));
+app.use('/api/login', require('./routes/auth.routes'));
 
-
-app.listen(process.env.PORT, () => {
     
+app.listen(process.env.PORT, () => {
+
 });
