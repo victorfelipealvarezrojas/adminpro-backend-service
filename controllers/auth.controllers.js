@@ -1,8 +1,15 @@
 const bcrypt = require('bcryptjs');
 const { generarJWT } = require('../helpers/jwt');
 const Usuario = require('../models/usuario.models');
+const { googleverify } = require('./../helpers/google_verify');
 
 
+
+
+/***********************************************************************************************************
+# postLogin => Metodo que permite realizar autenticacion
+# Fecha de creacion: 15 de enero del 2021
+************************************************************************************************************/
 const postLogin = async (_request, _response) => {
     const { email, password } = _request.body;
 
@@ -46,6 +53,60 @@ const postLogin = async (_request, _response) => {
     }
 }
 
+/***********************************************************************************************************
+# postGoogleSignIn => Metodo que permite realizar autenticacion
+# Fecha de creacion: 15 de enero del 2021
+************************************************************************************************************/
+const postGoogleSignIn = async (_request, _response) => {
+
+    const googleToken = _request.body.token;
+
+    try {
+
+        const { name, email, picture } = await googleverify(googleToken);
+        //verifico email 
+        const usuarioBD = await Usuario.findOne({ email });
+        let _usuario;
+
+        if (!usuarioBD) {
+            //si no existe usuario
+            _usuario = new Usuario({
+                nombre: name,
+                email,
+                imagen: picture,
+                password: '@@@@',
+                google: true
+            });
+
+        } else {
+            //existe usuario
+            _usuario = usuarioBD;
+            _usuario.google = true;
+            //_usuario.password = '@@@@';
+        }
+
+        await _usuario.save();
+        //si todo es correcto genero el token
+        // Generar el TOKEN - JWT         
+        const tokenId = await generarJWT(_usuario._id);
+
+        _response.status(500).json({
+            ok: true,
+            tokenId
+        });
+
+    } catch (err) {
+        _response.status(401).json({
+            ok: false,
+            mensaje: 'Token no es correcto' + err.mensaje
+        });
+    }
+
+
+}
+
+
 module.exports = {
-    postLogin
+    postLogin,
+    postGoogleSignIn
 }

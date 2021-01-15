@@ -14,6 +14,9 @@ app.use(express.json());//me permite obtener los valores desde el body en el req
 //3._BD
 DbConnection();
 
+//directorio publico
+app.use(express.static('public'));
+
 //2._ Rutas que tendra mi App
 app.use('/api/usuario', require('./routes/usuarios.routes'));
 app.use('/api/login', require('./routes/auth.routes'));
