@@ -7,11 +7,31 @@ const Usuario = require('../models/usuario.models');
 # getUsuarios => Metodo que permite liostar todos los usuario
 # Fecha de creacion: 11 de enero del 2021
 ************************************************************************************************************/
-const getUsuarios = async (request, response) => {
-    const _usuario = await Usuario.find({}, 'nombre role email google');
-    response.json({
+const getUsuarios = async (_request, _response) => {
+
+    const desde = Number(_request.query.desde) || 0;
+
+    /*const _usuario = await Usuario
+                                .find({}, 'nombre role email google')
+                                .skip(desde)
+                                .limit(5);
+
+    const total = await Usuario.count();*/
+
+    const [_usuario, total] = await Promise.all([
+
+        Usuario
+            .find({}, 'nombre role email google imagen')
+            .skip(desde)
+            .limit(5),
+
+        Usuario.countDocuments()
+    ])
+
+    _response.json({
         ok: true,
-        usuario: _usuario
+        usuario: _usuario,
+        tolal_registros: total
     });
 }
 

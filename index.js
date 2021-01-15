@@ -17,8 +17,12 @@ DbConnection();
 //2._ Rutas que tendra mi App
 app.use('/api/usuario', require('./routes/usuarios.routes'));
 app.use('/api/login', require('./routes/auth.routes'));
+app.use('/api/hospital', require('./routes/hospital.routes'));
+app.use('/api/medico', require('./routes/medicos.routes'));
+app.use('/api/todo', require('./routes/busquedas.routes'));
+app.use('/api/upload', require('./routes/uploads.routes'));
 
-    
+
 app.listen(process.env.PORT, () => {
 
 });
