@@ -5,7 +5,7 @@ const Medico = require('../models/medico.models');
 # Fecha de creacion: 12 de enero del 2021
 ************************************************************************************************************/
 const getMedicos = async (_request, _response) => {
-    const _medico = await Medico.find({}).populate('usuario','nombre imagen').populate('hospital','nombre imagen');
+    const _medico = await Medico.find({}).populate('usuario', 'nombre imagen').populate('hospital', 'nombre imagen');
     _response.json({
         ok: true,
         usuario: _medico
@@ -48,11 +48,36 @@ const postCrearMedico = async (_request, _response) => {
 # Fecha de creacion: 12 de enero del 2021
 ************************************************************************************************************/
 const putActualizaMedico = async (_request, _response) => {
-    //const _hospitales = await Hospitales.find({}, 'nombre role email google');
-    _response.json({
-        ok: true,
-        usuario: "medico"
-    });
+    //id que viaja por la URL
+    const MedicosId = _request.params.id;
+    const uid = _request.uid;//jwtojen usuario
+    const _medicos = await Medico.findById({ MedicosId });
+
+    if (!_medicos)
+        return _response.status(404).json({
+            ok: false,
+            mensaje: 'No se econtro nigun Medico con el Id seleccionado'
+        });
+
+    const nuevoMedico = {
+        ..._request.body,
+        usuario: uid
+    }
+    //actualizo registro
+    const resultado = await Medico.findByIdAndUpdate(MedicosId, nuevoMedico, { new: true });
+
+    try {
+        _response.json({
+            ok: true,
+            medico: resultado
+        });
+    }
+    catch (err) {
+        _response.status(500).json({
+            ok: false,
+            mensaje: `Error Inesperado: ${err}`
+        });
+    }
 }
 
 /***********************************************************************************************************
@@ -60,11 +85,31 @@ const putActualizaMedico = async (_request, _response) => {
 # Fecha de creacion: 12 de enero del 2021
 ************************************************************************************************************/
 const deleteMedico = async (_request, _response) => {
-    //const _hospitales = await Hospitales.find({}, 'nombre role email google');
-    _response.json({
-        ok: true,
-        usuario: "medico"
-    });
+    //id que viaja por la URL
+    const medicoId = _request.params.id;
+    const _medico = await Medico.findById({ medicoId });
+
+    if (!_medico)
+        return _response.status(404).json({
+            ok: false,
+            mensaje: 'No se econtro nigun medico con el Id seleccionado'
+        });
+
+    //actualizo registro
+    await Medico.findByIdAndDelete(medicoId);
+
+    try {
+        _response.json({
+            ok: true,
+            mensaje: "El Medico fue eliminado"
+        });
+    }
+    catch (err) {
+        _response.status(500).json({
+            ok: false,
+            mensaje: `Error Inesperado: ${err}`
+        });
+    }
 }
 
 module.exports = {

@@ -5,7 +5,7 @@ const Hospital = require('../models/hospital.models');
 # Fecha de creacion: 12 de enero del 2021
 ************************************************************************************************************/
 const getHospitales = async (_request, _response) => {
-    const _hospitales = await Hospital.find({}).populate('usuario','nombre imagen');
+    const _hospitales = await Hospital.find({}).populate('usuario', 'nombre imagen');
     _response.json({
         ok: true,
         hospital: _hospitales
@@ -50,11 +50,36 @@ const postCrearHospital = async (_request, _response) => {
 # Fecha de creacion: 12 de enero del 2021
 ************************************************************************************************************/
 const putActualizaHospital = async (_request, _response) => {
-    //const _hospitales = await Hospitales.find({}, 'nombre role email google');
-    _response.json({
-        ok: true,
-        usuario: "hospitales"
-    });
+    //id que viaja por la URL
+    const hospitalId = _request.params.id;
+    const uid = _request.uid;//jwtojen
+    const _hospital = await Hospital.findById({ hospitalId });
+
+    if (!_hospital)
+        return _response.status(404).json({
+            ok: false,
+            mensaje: 'No se econtro nigun hoaspital con el Id seleccionado'
+        });
+
+    const nuevoHospital = {
+        ..._request.body,
+        usuario: uid
+    }
+    //actualizo registro
+    const resultado = await Hospital.findByIdAndUpdate(hospitalId, nuevoHospital, { new: true });
+
+    try {
+        _response.json({
+            ok: true,
+            hospital: resultado
+        });
+    }
+    catch (err) {
+        _response.status(500).json({
+            ok: false,
+            mensaje: `Error Inesperado: ${err}`
+        });
+    }
 }
 
 /***********************************************************************************************************
@@ -62,11 +87,32 @@ const putActualizaHospital = async (_request, _response) => {
 # Fecha de creacion: 12 de enero del 2021
 ************************************************************************************************************/
 const deleteHospital = async (_request, _response) => {
-    //const _hospitales = await Hospitales.find({}, 'nombre role email google');
-    _response.json({
-        ok: true,
-        usuario: "hospitales"
-    });
+    //id que viaja por la URL
+    const hospitalId = _request.params.id;
+    const _hospital = await Hospital.findById({ hospitalId });
+
+    if (!_hospital)
+        return _response.status(404).json({
+            ok: false,
+            mensaje: 'No se econtro nigun hoaspital con el Id seleccionado'
+        });
+
+
+    //actualizo registro
+    await Hospital.findByIdAndDelete(hospitalId);
+
+    try {
+        _response.json({
+            ok: true,
+            mensaje: "El hospital fue eliminado"
+        });
+    }
+    catch (err) {
+        _response.status(500).json({
+            ok: false,
+            mensaje: `Error Inesperado: ${err}`
+        });
+    }
 }
 
 module.exports = {
