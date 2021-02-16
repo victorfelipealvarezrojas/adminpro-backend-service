@@ -8,7 +8,29 @@ const getMedicos = async (_request, _response) => {
     const _medico = await Medico.find({}).populate('usuario', 'nombre imagen').populate('hospital', 'nombre imagen');
     _response.json({
         ok: true,
-        usuario: _medico
+        medicos: _medico
+    });
+}
+
+/***********************************************************************************************************
+# getMedicoId => Metodo que permite listar unmedico x Id
+# Fecha de creacion: 13 de febrero del 2021
+************************************************************************************************************/
+const getMedicoId = async (_request, _response) => {
+    //id que viaja por la URL
+    const medico_id = _request.params.id;
+    const _medico = await Medico.findById({ _id: medico_id }).populate('usuario', 'nombre imagen').populate('hospital', 'nombre imagen');
+
+    if (!_medico) {
+        return _response.status(404).json({
+            ok: false,
+            mensaje: "No existe un medico asociado al Id"
+        });
+    }
+
+    _response.json({
+        ok: true,
+        medico: _medico
     });
 }
 
@@ -51,7 +73,7 @@ const putActualizaMedico = async (_request, _response) => {
     //id que viaja por la URL
     const MedicosId = _request.params.id;
     const uid = _request.uid;//jwtojen usuario
-    const _medicos = await Medico.findById({ MedicosId });
+    const _medicos = await Medico.findById({ _id:MedicosId });
 
     if (!_medicos)
         return _response.status(404).json({
@@ -87,7 +109,7 @@ const putActualizaMedico = async (_request, _response) => {
 const deleteMedico = async (_request, _response) => {
     //id que viaja por la URL
     const medicoId = _request.params.id;
-    const _medico = await Medico.findById({ medicoId });
+    const _medico = await Medico.findById({ _id: medicoId });
 
     if (!_medico)
         return _response.status(404).json({
@@ -112,9 +134,12 @@ const deleteMedico = async (_request, _response) => {
     }
 }
 
+
+
 module.exports = {
     getMedicos,
     postCrearMedico,
     putActualizaMedico,
-    deleteMedico
+    deleteMedico,
+    getMedicoId
 }

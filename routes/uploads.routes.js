@@ -6,7 +6,8 @@ const { putFileUpload, getRetornaImagen } = require('../controllers/uploads.cont
 
 const router = Router();
 
-router.use(expressFileupload());//me permite tener acceso a los archivos que cargo
+//me permite tener acceso a los archivos que cargo, accedere a ellos desde la vistav por la url de la api + sub carpetas ademas de almacenarlos
+router.use(expressFileupload());
 
 router.put('/:tipo/:id', validarJWT, putFileUpload);
 router.get('/:tipo/:foto', getRetornaImagen);

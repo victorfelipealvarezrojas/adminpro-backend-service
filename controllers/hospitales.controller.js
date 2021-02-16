@@ -53,7 +53,8 @@ const putActualizaHospital = async (_request, _response) => {
     //id que viaja por la URL
     const hospitalId = _request.params.id;
     const uid = _request.uid;//jwtojen
-    const _hospital = await Hospital.findById({ hospitalId });
+    //{ _id:hospitalId } siempre tiene quie tener el nombre del campo del modelo
+    const _hospital = await Hospital.findById({ _id: hospitalId });
 
     if (!_hospital)
         return _response.status(404).json({
@@ -89,7 +90,7 @@ const putActualizaHospital = async (_request, _response) => {
 const deleteHospital = async (_request, _response) => {
     //id que viaja por la URL
     const hospitalId = _request.params.id;
-    const _hospital = await Hospital.findById({ hospitalId });
+    const _hospital = await Hospital.findById({ _id: hospitalId });
 
     if (!_hospital)
         return _response.status(404).json({
@@ -99,7 +100,7 @@ const deleteHospital = async (_request, _response) => {
 
 
     //actualizo registro
-    await Hospital.findByIdAndDelete(hospitalId);
+    await Hospital.findByIdAndDelete({ _id: hospitalId });
 
     try {
         _response.json({

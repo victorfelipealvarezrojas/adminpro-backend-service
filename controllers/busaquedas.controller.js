@@ -7,6 +7,8 @@ const getBusquedaTexto = async (_request, _response) => {
     const texto = _request.params.texto;
     const regularExp = new RegExp(texto, 'i');
 
+    //realizo busqueda en todas las colecciones y las ejecuto juntas con Promise.all
+    //retornara un array de respuestas(coincidentes con el texto buscado) , 1 por cada modelo las cuales obtengo por desestructuracion
     const [_usuarios, _medicos, _hospitales] = await Promise.all([
         Usuario.find({ nombre: regularExp }),
         Medico.find({ nombre: regularExp }),
@@ -38,12 +40,15 @@ const getDocumentosColeccion = async (_request, _response) => {
             data = await Usuario.find({ nombre: regularExp });
             break;
         default:
-
             return _response.status(400).json({
                 ok: false,
                 mensaje: `La tabla no esta definidas`
             });
     }
+    _response.status(200).json({
+        ok: true,
+        resultado: data
+    });
 }
 
 module.exports = {

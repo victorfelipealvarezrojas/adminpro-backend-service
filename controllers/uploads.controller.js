@@ -76,7 +76,7 @@ const putFileUpload = async (_request, _response) => {
 ************************************************************************************************************/
 const getRetornaImagen = (_request, _response) =>{
 
-    const tipo = _request.params.tipo;//tipo que llega por la url
+    const tipo = _request.params.tipo;//tipo que llega por la url(usuarios/medicos/hospitales)
     const foto = _request.params.foto;//foto que llega por la url
     
     const pathImg = path.join(__dirname,`../uploads/${tipo}/${foto}`);
@@ -86,7 +86,7 @@ const getRetornaImagen = (_request, _response) =>{
     if(fs.existsSync(pathImg))
         return  _response.sendFile(pathImg);
 
-    //si la ruta ded la imagen no existe
+    //si la ruta de la imagen no existe
     const pathImg2 = path.join(__dirname,`../uploads/defaultImg.jpg`);
     _response.sendFile(pathImg2);
 }

@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { generarJWT } = require('../helpers/jwt');
+const { getMenu } = require('../helpers/menu-fron');
 const Usuario = require('../models/usuario.models');
 const { googleverify } = require('./../helpers/google_verify');
 
@@ -38,7 +39,8 @@ const postLogin = async (_request, _response) => {
         console.log("token", token);
         _response.json({
             ok: true,
-            token
+            token,
+            menu: getMenu(usuarioDB.rol)
         });
 
 
@@ -62,7 +64,8 @@ const postGoogleSignIn = async (_request, _response) => {
     const googleToken = _request.body.token;
 
     try {
-
+        //desde elm _request llega el token obtenido en el proceso dee autenticacion en ANGULAR(vista)
+        //dentro de ese token por medio de googleverify obtengo los valores desestructurados name, email, picture
         const { name, email, picture } = await googleverify(googleToken);
         //verifico email 
         const usuarioBD = await Usuario.findOne({ email });
@@ -90,9 +93,10 @@ const postGoogleSignIn = async (_request, _response) => {
         // Generar el TOKEN - JWT         
         const tokenId = await generarJWT(_usuario._id);
 
-        _response.status(500).json({
+        _response.status(200).json({
             ok: true,
-            tokenId
+            tokenId,
+            menu: getMenu(usuarioBD.rol)
         });
 
     } catch (err) {
@@ -105,16 +109,22 @@ const postGoogleSignIn = async (_request, _response) => {
 
 }
 
+
 const getRenewToken = async (_request, _response) => {
 
     const uid = _request.uid;
+
+    //obtener Usuario por Id
+    const usuarioBD = await Usuario.findById(uid);
 
     // Generar el TOKEN - JWT         
     const tokenId = await generarJWT(uid);
 
     _response.json({
         ok: true,
-        token: tokenId
+        token: tokenId,
+        usuario: usuarioBD,
+        menu: getMenu(usuarioBD.rol)
     });
 }
 

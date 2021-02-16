@@ -16,7 +16,7 @@ const MedicoSchema = new Schema({
     hospital: {
         required: true,
         type: Schema.Types.ObjectId,//indica una relacion o referencia a otra entidad por su objeto Id
-        ref: 'hospital'//indica con cual entidad se relacionara 
+        ref: 'hospital',//indica con cual entidad se relacionara 
     }
 
 }, { collection: 'medicos' });//cambio nombre con el cual se representara en la BD

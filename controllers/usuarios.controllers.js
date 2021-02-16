@@ -21,7 +21,7 @@ const getUsuarios = async (_request, _response) => {
     const [_usuario, total] = await Promise.all([
 
         Usuario
-            .find({}, 'nombre role email google imagen')
+            .find({}, 'nombre rol email google imagen')
             .skip(desde)
             .limit(5),
 
@@ -114,11 +114,12 @@ const putActualizaUsuario = async (_request, _response = response) => {
             }
         }
 
-        campos.email = email;
-
+        if(!usuarioDB.google){
+            campos.email = email;
+        }
         const actualizaUsuario = await Usuario.findByIdAndUpdate(uid, campos, { new: true });
 
-        _response.status(500).json({
+        _response.status(200).json({
             ok: true,
             mensaje: actualizaUsuario
         });
@@ -151,8 +152,8 @@ const deleteUsuario = async (_request, _response = response) => {
                 mensaje: "No existe un usuario para ese Id"
             });
         }
-        await Usuario.findOneAndDelete(uid);
-        _response.status(500).json({
+        const resultado = await  Usuario.findByIdAndDelete(uid);
+        _response.status(200).json({
             ok: true,
             mensaje: 'Usuario Eliminado'
         });
